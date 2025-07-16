@@ -2,42 +2,61 @@
 
 #define TAMANHO 10
 #define NAVIO 3
+#define OCUPADO 3
+
+// Função auxiliar para verificar se a posição está livre
+int posicaoLivre(int tabuleiro[TAMANHO][TAMANHO], int linha, int coluna) {
+    return tabuleiro[linha][coluna] == 0;
+}
 
 int main() {
-    // Tabuleiro 10x10 inicializado com água (0)
+    // Inicializa o tabuleiro com água
     int tabuleiro[TAMANHO][TAMANHO] = {0};
 
-    // Coordenadas iniciais dos navios
-    int linhaVertical = 1, colunaVertical = 4;
-    int linhaHorizontal = 6, colunaHorizontal = 2;
-
-    // Verificação se os navios cabem no tabuleiro
-    if (linhaVertical + NAVIO > TAMANHO || colunaHorizontal + NAVIO > TAMANHO) {
-        printf("Erro: navio fora dos limites do tabuleiro.\n");
-        return 1;
-    }
-
-    // Verificação de sobreposição (simples)
+    // Posicionamento horizontal
+    int linhaH = 0, colunaH = 1;
     for (int i = 0; i < NAVIO; i++) {
-        if (tabuleiro[linhaVertical + i][colunaVertical] == NAVIO ||
-            tabuleiro[linhaHorizontal][colunaHorizontal + i] == NAVIO) {
-            printf("Erro: sobreposição de navios.\n");
+        if (colunaH + NAVIO > TAMANHO || !posicaoLivre(tabuleiro, linhaH, colunaH + i)) {
+            printf("Erro: navio horizontal fora dos limites ou sobreposição.\n");
             return 1;
         }
+        tabuleiro[linhaH][colunaH + i] = OCUPADO;
     }
 
-    // Posiciona o navio vertical
+    // Posicionamento vertical
+    int linhaV = 3, colunaV = 5;
     for (int i = 0; i < NAVIO; i++) {
-        tabuleiro[linhaVertical + i][colunaVertical] = NAVIO;
+        if (linhaV + NAVIO > TAMANHO || !posicaoLivre(tabuleiro, linhaV + i, colunaV)) {
+            printf("Erro: navio vertical fora dos limites ou sobreposição.\n");
+            return 1;
+        }
+        tabuleiro[linhaV + i][colunaV] = OCUPADO;
     }
 
-    // Posiciona o navio horizontal
+    // Posicionamento diagonal ascendente (↘)
+    int linhaD1 = 1, colunaD1 = 1;
     for (int i = 0; i < NAVIO; i++) {
-        tabuleiro[linhaHorizontal][colunaHorizontal + i] = NAVIO;
+        if (linhaD1 + NAVIO > TAMANHO || colunaD1 + NAVIO > TAMANHO ||
+            !posicaoLivre(tabuleiro, linhaD1 + i, colunaD1 + i)) {
+            printf("Erro: navio diagonal ↘ fora dos limites ou sobreposição.\n");
+            return 1;
+        }
+        tabuleiro[linhaD1 + i][colunaD1 + i] = OCUPADO;
     }
 
-    // Exibe o tabuleiro
-    printf("Tabuleiro de Batalha Naval:\n");
+    // Posicionamento diagonal descendente (↙)
+    int linhaD2 = 2, colunaD2 = 8;
+    for (int i = 0; i < NAVIO; i++) {
+        if (linhaD2 + NAVIO > TAMANHO || colunaD2 - i < 0 ||
+            !posicaoLivre(tabuleiro, linhaD2 + i, colunaD2 - i)) {
+            printf("Erro: navio diagonal ↙ fora dos limites ou sobreposição.\n");
+            return 1;
+        }
+        tabuleiro[linhaD2 + i][colunaD2 - i] = OCUPADO;
+    }
+
+    // Exibição do tabuleiro
+    printf("Tabuleiro de Batalha Naval:\n\n");
     for (int i = 0; i < TAMANHO; i++) {
         for (int j = 0; j < TAMANHO; j++) {
             printf("%d ", tabuleiro[i][j]);
